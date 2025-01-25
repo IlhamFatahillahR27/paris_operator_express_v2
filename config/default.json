@@ -1,4 +1,4 @@
 {
-  "nodeSerialPort": "COM12",
+  "nodeSerialPort": "COM3",
   "baudRate": 9600
 }

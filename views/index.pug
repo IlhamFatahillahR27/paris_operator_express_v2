@@ -1,35 +1,34 @@
 extends layout
 
 block content
-  .card
-    .card-header
-      h1= title
-      p Welcome to #{title}
-    .card-body
+  .wrapper
+    .card(style="width: 75%;")
+      .card-header
+        h1= title
+        p Welcome to #{title}
       #log-container.log-viewer
         pre#log-content
+    div(style="width: 25%;")
+      .card
+        .card-header
+          h1= "List Port"
+        .card-body
+          .list-port
+            each item in port_list
+              - let cardClass = (item === selected_port) ? 'card-success' : ''
+              .card(class=cardClass style="flex-grow:1;")
+                #item.card-body #{item}
+      .section-legend
+        .item-legend
+          svg(xmlns="http://www.w3.org/2000/svg" width="24" height="27.428571428571427" viewBox="0 0 448 512")
+            path(fill="#20c997" d="M0 96c0-35.3 28.7-64 64-64h320c35.3 0 64 28.7 64 64v320c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64z")
+          p Selected
+        .item-legend
+          svg(xmlns="http://www.w3.org/2000/svg" width="24" height="27.428571428571427" viewBox="0 0 448 512")
+            path(fill="currentColor" d="M0 96c0-35.3 28.7-64 64-64h320c35.3 0 64 28.7 64 64v320c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64z")
+          p Not Selected
 
-  style.
-    .card {
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    .card-header {
-      padding: 0 24px;
-    }
-    .log-viewer {
-      background: #1e1e1e;
-      color: #fff;
-      padding: 10px;
-      height: 400px;
-      overflow-y: auto;
-    }
-    .log-viewer pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
+
 
   script(src="/socket.io/socket.io.js")
   script.

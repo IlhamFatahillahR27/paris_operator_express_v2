@@ -12,7 +12,7 @@ var serialPortService = require('./services/serialPortService');
 var app = express();
 
 // Initialize serial port
-serialPortService.initializeSerialPort();
+// serialPortService.initializeSerialPort();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

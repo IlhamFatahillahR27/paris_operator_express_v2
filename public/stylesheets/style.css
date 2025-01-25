@@ -4,5 +4,69 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00b7ff;
+}
+
+.wrapper {
+  display: flex;
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-success {
+  background: #20c997;
+  font-weight: 600;
+}
+
+.card-header {
+  padding: 0 24px;
+}
+
+.card-body {
+  padding: 0px 24px 24px 24px;
+}
+
+.log-viewer {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 10px;
+  height: 400px;
+  overflow-y: auto;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.log-viewer pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.list-port {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#item {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+}
+
+.section-legend {
+  margin-top: 12px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.item-legend {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
