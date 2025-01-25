@@ -7,8 +7,12 @@ var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var serialPortService = require('./services/serialPortService');
 
 var app = express();
+
+// Initialize serial port
+serialPortService.initializeSerialPort();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
