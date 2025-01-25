@@ -6,6 +6,7 @@ const listPort = async (req, res) => {
     try {
         const data = await serialPortService.listPorts();
         helpers.writeLog('Successfully listed ports');
+        helpers.writeLog('Port : ' + data);
         res.status(200).json({
             success: true,
             ports: data,

@@ -24,6 +24,14 @@ function moneyFormat(money) {
 }
 
 function writeLog(message) {
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Set timezone Asia/Jakarta
+    const options = { timeZone: "Asia/Jakarta", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" };
+    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const timestamp = formatter.format(new Date());
+
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -31,10 +39,11 @@ function writeLog(message) {
     const formattedDate = `${year}-${month}-${day}`;
 
     const LOG_FILE = path.join(__dirname, "../logs/express_" + formattedDate + ".log");
-    const timestamp = new Date().toISOString();
     const logMessage = `${timestamp}: ${message}\n`;
+
     fs.appendFileSync(LOG_FILE, logMessage);
 }
+
 
 module.exports = {
   writeLog,
