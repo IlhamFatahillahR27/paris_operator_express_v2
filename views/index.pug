@@ -1,5 +1,57 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .card
+    .card-header
+      h1= title
+      p Welcome to #{title}
+    .card-body
+      #log-container.log-viewer
+        pre#log-content
+
+  style.
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+      padding: 0 24px;
+    }
+    .log-viewer {
+      background: #1e1e1e;
+      color: #fff;
+      padding: 10px;
+      height: 400px;
+      overflow-y: auto;
+    }
+    .log-viewer pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+  script(src="/socket.io/socket.io.js")
+  script.
+    const socket = io();
+    const logContent = document.getElementById('log-content');
+    const logContainer = document.getElementById('log-container');
+    let autoScroll = true;
+
+    // Fungsi untuk scroll otomatis ke bawah
+    function scrollToBottom() {
+      if (autoScroll) {
+        logContainer.scrollTop = logContainer.scrollHeight;
+      }
+    }
+
+    socket.on('log_update', (data) => {
+      logContent.innerHTML += data + '\n';
+      scrollToBottom();
+    });
+
+    // Event listener untuk mendeteksi scroll manual
+    logContainer.addEventListener('scroll', () => {
+      const nearBottom = logContainer.scrollTop + logContainer.clientHeight >= logContainer.scrollHeight - 10;
+      autoScroll = nearBottom;
+    });

@@ -17,6 +17,7 @@
     "paris-operator-express-v2": "file:",
     "pug": "2.0.0-beta11",
     "serialport": "^13.0.0",
+    "socket.io": "^4.8.1",
     "tail": "^2.2.6",
     "ws": "^8.18.0"
   }

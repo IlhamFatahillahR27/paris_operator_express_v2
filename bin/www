@@ -28,6 +28,48 @@ var host = process.env.HOST || 'localhost';
 var server = http.createServer(app);
 
 /**
+ * Setup socket.io server
+ */
+var io = require('socket.io')(server);
+var Tail = require('tail').Tail;
+var fs = require('fs');
+
+const today = new Date();
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, "0");
+const day = String(today.getDate()).padStart(2, "0");
+const logFile = `./logs/express_${year}-${month}-${day}.log`;
+const logsDir = './logs/';
+
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
+
+// Pastikan file log ada dan tidak kosong
+if (!fs.existsSync(logFile)) {
+  fs.writeFileSync(logFile, '', { flag: 'w' });
+}
+
+const tail = new Tail(logFile);
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+
+  fs.readFile(logFile, 'utf8', (err, data) => {
+    if (err) throw err;
+    socket.emit('log_update', data);
+  });
+
+  tail.on("line", (data) => {
+    socket.emit('log_update', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 

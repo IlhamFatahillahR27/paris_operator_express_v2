@@ -101,6 +101,13 @@ function reconnectSerial() {
     }, RECONNECT_DELAY);
 }
 
+async function listPorts() {
+    const ports = await SerialPort.list();
+    const portNames = ports.map((port) => port.path);
+    writeLog('Found ports:', portNames.length);
+    return portNames;
+}
+
 function sendCommand(command) {
     return new Promise((resolve, reject) => {
         if (!serialPort) {
@@ -132,5 +139,6 @@ function sendCommand(command) {
 
 module.exports = {
     initializeSerialPort,
-    getSerialPort: () => serialPort
+    sendCommand,
+    listPorts
 };
