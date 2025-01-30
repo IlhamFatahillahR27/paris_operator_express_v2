@@ -1,0 +1,27 @@
+mixin apiTemplate(api_method, api_title, api_description)
+
+    .card(style="margin-bottom:8px;" onclick=`handleClick("${api_title}", "${api_method}")`)
+        .wrapper(style="padding:3px 8px; align-items:center;")
+            .api-method(class=api_method)
+                h3= api_method
+            div
+                h3(style="margin:12px 0px 0px 0px")= api_title
+                p(style="margin:12px 0px") #{api_description}
+
+script.
+    function handleClick(endpoint, method) {
+        if (method === 'GET') {
+            fetch(endpoint, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(data => {
+                console.log("Response Data:", data);
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+        }
+    }

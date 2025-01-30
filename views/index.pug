@@ -1,13 +1,16 @@
 extends layout
 
 block content
+  include partials/_apiTemplate
+
   .wrapper
-    .card(style="width: 75%;")
-      .card-header
-        h1= title
-        p Welcome to #{title}
-      #log-container.log-viewer
-        pre#log-content
+    div(style="width: 75%;")
+      .card
+        .card-header
+          h1= title
+          p Welcome to #{title}
+        #log-container.log-viewer
+          pre#log-content
     div(style="width: 25%;")
       .card
         .card-header
@@ -27,8 +30,14 @@ block content
           svg(xmlns="http://www.w3.org/2000/svg" width="24" height="27.428571428571427" viewBox="0 0 448 512")
             path(fill="currentColor" d="M0 96c0-35.3 28.7-64 64-64h320c35.3 0 64 28.7 64 64v320c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64z")
           p Not Selected
-
-
+      .card(style="margin-top:12px;")
+        .card-header
+          h1="List API"
+        .card-body
+          +apiTemplate('GET', '/test-connect', 'Digunakan untuk melakukan test koneksi ke micro operator.')
+          +apiTemplate('GET', '/ports', 'Digunakan untuk menampilkan list port.')
+          +apiTemplate('GET', '/open', 'Digunakan untuk membuka palang.')
+          +apiTemplate('POST', '/ports', 'Digunakan untuk mengganti koneksi port yang aktif.')
 
   script(src="/socket.io/socket.io.js")
   script.
