@@ -73,10 +73,32 @@ io.on('connection', (socket) => {
 
 if (tcpServerOn) {
   const logFileTcp = `./logs/tcp/express_${year}-${month}-${day}.log`;
+  const tailTcp = new Tail(logFileTcp);
 
+  if (!fs.existsSync(logsDir + 'tcp')) {
+    fs.mkdirSync(logsDir + 'tcp', { recursive: true });
+  }
+  
   if (!fs.existsSync(logFileTcp)) {
     fs.writeFileSync(logFileTcp, '', { flag: 'w' });
   }
+
+  io.on('connection', (socket) => {
+    console.log('TCP connected');
+
+    fs.readFile(logFile, 'utf8', (err, data) => {
+      if (err) throw err;
+      socket.emit('log_update_tcp', data);
+    });
+
+    tailTcp.on("line", (data) => {
+      socket.emit('log_update_tcp', data);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('TCP disconnected');
+    });
+  });
 }
 
 /**

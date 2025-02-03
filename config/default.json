@@ -1,4 +1,6 @@
 {
-  "nodeSerialPort": "COM3",
-  "baudRate": 9600
+  "serialPortMicro": "COM3",
+  "baudRateMicro": 9600,
+  "serialPortEmoney": "COM4",
+  "baudRateEmoney": 9600
 }

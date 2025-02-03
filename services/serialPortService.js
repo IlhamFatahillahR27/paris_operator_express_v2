@@ -1,11 +1,10 @@
 const { SerialPort } = require("serialport");
 const { DelimiterParser } = require("@serialport/parser-delimiter");
 
-const { writeLog, hextodec, moneyFormat, hexreverse } = require("../utils/helpers");
+const { writeLog } = require("../utils/helpers");
 const { setConfigValue, getConfigValue } = require("../config/config");
 
 require('dotenv').config();
-const net = require('net');
 
 let serialPort = null;
 let reconnectSerialTimeout = null;
@@ -16,16 +15,16 @@ const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY || '3000', 10);
 const TEST_COMMAND = process.env.TEST_COMMAND || ':TEST;';
 
 async function initializeSerialPort() {
-    const nodeSerialPort = getConfigValue("nodeSerialPort");
-    const nodeBaudRate = getConfigValue("baudRate");
+    const serialPortMicro = getConfigValue("serialPortMicro");
+    const baudRateMicro = getConfigValue("baudRateMicro");
 
     cleanupSerialPort();
 
     parser = new DelimiterParser({ delimiter: ";" });
 
     serialPort = new SerialPort({
-        path: nodeSerialPort,
-        baudRate: nodeBaudRate,
+        path: serialPortMicro,
+        baudRate: baudRateMicro,
         dataBits: 8,
         stopBits: 1,
         parity: "none",

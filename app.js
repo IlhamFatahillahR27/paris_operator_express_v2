@@ -8,11 +8,21 @@ var cors = require('cors');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var serialPortService = require('./services/serialPortService');
+var tcpService = require('./services/tcpService');
 
 var app = express();
 
 // Initialize serial port
-// serialPortService.initializeSerialPort();
+var tcpServerOn = process.env.TCP_SERVER_ON || false;
+var appEnv = process.env.APP_ENV || 'local';
+
+if (appEnv == 'production') {
+  serialPortService.initializeSerialPort();
+  if (tcpServerOn) {
+    tcpService.initializeSerialPortEmoney();
+  }
+}
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
