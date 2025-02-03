@@ -44,9 +44,31 @@ function writeLog(message) {
     fs.appendFileSync(LOG_FILE, logMessage);
 }
 
+function tcpWriteLog(message) {
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Set timezone Asia/Jakarta
+    const options = { timeZone: "Asia/Jakarta", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" };
+    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const timestamp = formatter.format(new Date());
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+
+    const LOG_FILE = path.join(__dirname, "../logs/tcp/express_" + formattedDate + ".log");
+    const logMessage = `${timestamp}: ${message}\n`;
+
+    fs.appendFileSync(LOG_FILE, logMessage);
+}
+
 
 module.exports = {
   writeLog,
+  tcpWriteLog,
   hextodec,
   moneyFormat,
   hexreverse
