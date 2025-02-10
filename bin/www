@@ -34,7 +34,7 @@ var io = require('socket.io')(server);
 var Tail = require('tail').Tail;
 var fs = require('fs');
 
-var tcpServerOn = process.env.TCP_SERVER_ON || false;
+var EMONEY_GATE_IN = process.env.EMONEY_GATE_IN || false;
 
 const today = new Date();
 const year = today.getFullYear();
@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
   });
 });
 
-if (tcpServerOn) {
+if (EMONEY_GATE_IN) {
   const logFileTcp = `./logs/tcp/express_${year}-${month}-${day}.log`;
   const tailTcp = new Tail(logFileTcp);
 
