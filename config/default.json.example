@@ -1,0 +1,8 @@
+{
+  "PortMicroOut": "COM3",
+  "BaudRateMicroOut": 9600,
+  "PortEmoneyIn": "COM4",
+  "BaudRateEmoneyIn": 9600,
+  "PortEmoneyOut": "COM4",
+  "BaudRateEmoneyOut": 38400,
+}
