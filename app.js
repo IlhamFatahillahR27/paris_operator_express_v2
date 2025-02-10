@@ -7,19 +7,19 @@ var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var serialPortService = require('./services/serialPortService');
-var tcpService = require('./services/tcpService');
+var microOutService = require('./services/GateOut/MicroOutService');
+var emoneyInService = require('./services/GateIn/EmoneyInService');
 
 var app = express();
 
 // Initialize serial port
-var tcpServerOn = process.env.TCP_SERVER_ON || false;
+var EMONEY_GATE_IN = process.env.EMONEY_GATE_IN || false;
 var appEnv = process.env.APP_ENV || 'local';
 
 if (appEnv == 'production') {
-  serialPortService.initializeSerialPort();
-  if (tcpServerOn) {
-    tcpService.initializeSerialPortEmoney();
+  microOutService.initializeSerialPort();
+  if (EMONEY_GATE_IN) {
+    emoneyInService.initializeSerialPortEmoney();
   }
 }
 

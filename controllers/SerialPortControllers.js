@@ -1,12 +1,12 @@
-const serialPortService = require('../services/serialPortService');
+const microOutService = require('../services/GateOut/MicroOutService');
 const config = require('../config/config');
 const helpers = require('../utils/helpers');
 
 const listPort = async (req, res) => {
     try {
-        const data = await serialPortService.listPorts();
-        helpers.writeLog('Successfully listed ports');
-        helpers.writeLog('Port : ' + data);
+        const data = await microOutService.listPorts();
+        helpers.writeLog('[GATE OUT] Successfully listed ports');
+        helpers.writeLog('[GATE OUT] Port : ' + data);
         res.status(200).json({
             success: true,
             ports: data,
@@ -14,7 +14,7 @@ const listPort = async (req, res) => {
             error: null
         });
     } catch (error) {
-        helpers.writeLog(`Failed to list ports. Error : ${error.message}`);
+        helpers.writeLog(`[GATE OUT] Failed to list ports. Error : ${error.message}`);
         res.status(500).json({ 
             success: false,
             ports : [],
@@ -28,15 +28,15 @@ const changePort = async (req, res) => {
     const portName = req.body.port;
 
     try {
-        config.setConfigValue('nodeSerialPort', portName);
-        const newConfig = config.getConfigValue('nodeSerialPort');
+        config.setConfigValue('PortMicroOut', portName);
+        const newConfig = config.getConfigValue('PortMicroOut');
 
         if (newConfig != portName) {
             throw new Error('Failed to change port');
         }
 
-        helpers.writeLog(`Port changed to ${portName}`);
-        serialPortService.initializeSerialPort();
+        helpers.writeLog(`[GATE OUT] Port changed to ${portName}`);
+        microOutService.initializeSerialPort();
 
         res.status(200).json({
             success: true,
@@ -44,7 +44,7 @@ const changePort = async (req, res) => {
             error: null
         });
     } catch (error) {
-        helpers.writeLog(`Failed to change port to ${portName}. Error : ${error.message}`);
+        helpers.writeLog(`[GATE OUT] Failed to change port to ${portName}. Error : ${error.message}`);
         res.status(500).json({ 
             success: false,
             message: `Failed to change port to ${portName}`,
@@ -57,20 +57,20 @@ const openGate = async (req, res) => {
     try {
         const message = ":OPEN1;";
 
-        const data = await serialPortService.sendCommand(message);
+        const data = await microOutService.sendCommand(message);
 
         if (!data) {
             throw new Error('Failed to open gate');
         }
 
-        helpers.writeLog('Successfully opened gate. Response : ' + data);
+        helpers.writeLog('[GATE OUT] Successfully opened gate. Response : ' + data);
         res.status(200).json({
             success: true,
             message: 'Successfully opened gate',
             error: null
         });
     } catch (error) {
-        helpers.writeLog('Failed to open gate. Error : ' + error.message);
+        helpers.writeLog('[GATE OUT] Failed to open gate. Error : ' + error.message);
         res.status(500).json({ 
             success: false,
             message: 'Failed to open gate',

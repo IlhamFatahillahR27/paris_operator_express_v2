@@ -1,6 +1,8 @@
 {
-  "serialPortMicro": "COM3",
-  "baudRateMicro": 9600,
-  "serialPortEmoney": "COM4",
-  "baudRateEmoney": 9600
+  "PortMicroOut": "COM3",
+  "BaudRateMicroOut": 9600,
+  "PortEmoneyIn": "COM4",
+  "BaudRateEmoneyIn": 9600,
+  "PortEmoneyOut": "COM5",
+  "BaudRateEmoneyOut": 38400
 }

@@ -1,8 +1,10 @@
 const { SerialPort } = require("serialport");
 const { DelimiterParser } = require("@serialport/parser-delimiter");
 
-const { writeLog } = require("../utils/helpers");
-const { setConfigValue, getConfigValue } = require("../config/config");
+const EmoneyOutService = require("./EmoneyOutService");
+const { writeLog } = require("../../utils/helpers");
+const { getConfigValue } = require("../../config/config");
+const { stopLoop } = require("./variable");
 
 require('dotenv').config();
 
@@ -13,10 +15,11 @@ let parser = null;
 
 const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY || '3000', 10);
 const TEST_COMMAND = process.env.TEST_COMMAND || ':TEST;';
+const EMONEY_ACTIVE = process.env.EMONEY_GATE_OUT || false;
 
 async function initializeSerialPort() {
-    const serialPortMicro = getConfigValue("serialPortMicro");
-    const baudRateMicro = getConfigValue("baudRateMicro");
+    const serialPortMicro = getConfigValue("PortMicroOut");
+    const baudRateMicro = getConfigValue("BaudRateMicroOut");
 
     cleanupSerialPort();
 
@@ -34,27 +37,57 @@ async function initializeSerialPort() {
 
     serialPort.on("open", function () {
         writeLog("####################################");
-        writeLog("Serial Port Opened");
+        writeLog("[GATE KELUAR] Serial Port Opened");
+
+        if (EMONEY_ACTIVE) {
+            EmoneyOutService.initializeSerialPort();
+        }
     });
 
     serialPort.on("error", function (err) {
-        writeLog("Serial Port Error: ", err.message);
+        writeLog("[GATE KELUAR] Serial Port Error: ", err.message);
         reconnectSerial();
     });
 
     // Handle unexpected disconnections
     serialPort.on('disconnect', function () {
-        writeLog("Serial Port Disconnected");
+        writeLog("[GATE KELUAR] Serial Port Disconnected");
         reconnectSerial();
     });
 
+    if (EMONEY_ACTIVE) {
+        parser.on("data", function (data) {
+            const message = data.toString().trim();
+            writeLog("[GATE KELUAR] Received Data: " + message);
+    
+            if (message === "IN1ON") {
+                stopLoop = false;
+                EmoneyOutService.handleLoopDetected();
+            } else if (message === "OUT1ON") {
+                stopLoop = true;
+            }
+        });
+    }
+
     sendCommand(TEST_COMMAND)
         .then((response) => {
-            writeLog("Test Command Response: ", response);
+            writeLog("[GATE KELUAR] Test Command Response: " + response);
         })
         .catch((error) => {
-            writeLog("Error sending test command: ", error.message);
+            writeLog("[GATE KELUAR] Error sending test command: " + error.message);
         });
+}
+
+function reconnectSerial() {
+    // Prevent multiple reconnection attempts
+    if (reconnectSerialTimeout) {
+        return;
+    }
+
+    reconnectSerialTimeout = setTimeout(() => {
+        writeLog("[GATE KELUAR] Attempting to reconnect serial port...");
+        initializeSerialPort();
+    }, RECONNECT_DELAY);
 }
 
 function cleanupSerialPort() {
@@ -73,7 +106,7 @@ function cleanupSerialPort() {
         if (serialPort.isOpen) {
             serialPort.close((err) => {
                 if (err) {
-                    writeLog('Error closing port: ', err.message);
+                    writeLog('[GATE KELUAR] Error closing port: ', err.message);
                 }
             });
         }
@@ -86,18 +119,6 @@ function cleanupSerialPort() {
         clearTimeout(reconnectSerialTimeout);
         reconnectSerialTimeout = null;
     }
-}
-
-function reconnectSerial() {
-    // Prevent multiple reconnection attempts
-    if (reconnectSerialTimeout) {
-        return;
-    }
-
-    reconnectSerialTimeout = setTimeout(() => {
-        writeLog("Attempting to reconnect serial port...");
-        initializeSerialPort();
-    }, RECONNECT_DELAY);
 }
 
 async function listPorts() {
