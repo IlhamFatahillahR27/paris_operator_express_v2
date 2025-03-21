@@ -24,16 +24,16 @@ async function initializeSerialPort() {
 
     serialPort.open(() => {
         writeLog("####################################");
-        writeLog("[GATE KELUAR] Serial Port E-Money Opened");
+        writeLog("[GATE KELUAR | E-Money] Serial Port E-Money Opened");
     });
     
     serialPort.on("error", function (err) {
-        writeLog("[GATE KELUAR] Serial Port E-Money Error:" + err.message);
+        writeLog("[GATE KELUAR | E-Money] Serial Port E-Money Error:" + err.message);
         reconnectSerial();
     });
 
     serialPort.on('disconnect', function () {
-        writeLog("[GATE KELUAR] Serial Port E-Money Disconnected");
+        writeLog("[GATE KELUAR | E-Money] Serial Port E-Money Disconnected");
         reconnectSerial();
     });
 
@@ -53,7 +53,7 @@ function reconnectSerial() {
     }
 
     reconnectSerialTimeout = setTimeout(() => {
-        writeLog("[GATE KELUAR] Attempting to reconnect serial port E-Money...");
+        writeLog("[GATE KELUAR | E-Money] Attempting to reconnect serial port E-Money...");
         initializeSerialPort();
     }, RECONNECT_DELAY);
 }
@@ -70,7 +70,7 @@ function cleanupSerialPort() {
         if (serialPort.isOpen) {
             serialPort.close((err) => {
                 if (err) {
-                    writeLog('[GATE KELUAR] Error closing port E-Money : ' + err.message);
+                    writeLog('[GATE KELUAR | E-Money] Error closing port E-Money : ' + err.message);
                 }
             });
         }
@@ -180,6 +180,7 @@ function sendCommand(command, data = []) {
 
         serialPort.write(Buffer.from(frame), (err) => {
             if (err) {
+                writeLog('[GATE KELUAR | E-Money] Error on write command: ' + err.message);
                 console.log("Error on write: ", err.message);
             } else {
                 console.log("Message written (HEX):", Buffer.from(frame).toString("hex"));
@@ -195,6 +196,7 @@ function sendCommand(command, data = []) {
         });
 
         parser.once("error", function (err) {
+            writeLog('[GATE KELUAR | E-Money] Parser Error: ' + err.message);
             console.log("Parser Error: ", err.message);
             reject(err);
         });
@@ -221,8 +223,12 @@ function handleLoopDetected() {
     } while (!condition);
 }
 
-function processLoopEvent() {
+async function processLoopEvent() {
+    let complete = false;
 
+    disableBuzzer();
+    
+    const data = await getLastTransaction();
 }
 
 module.exports = {
