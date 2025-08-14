@@ -1,8 +1,9 @@
 const { SerialPort } = require("serialport");
 const { DelimiterParser } = require("@serialport/parser-delimiter");
 
-const { writeLog, hextodec, moneyFormat, hexreverse } = require("../utils/helpers");
-const { setConfigValue, getConfigValue } = require("../config/config");
+const { loopEvent } = require("../services/parisServerService");
+const { writeLog } = require("../utils/helpers");
+const { getConfigValue } = require("../config/config");
 
 require('dotenv').config();
 const net = require('net');
@@ -11,10 +12,13 @@ let serialPort = null;
 let reconnectSerialTimeout = null;
 let parser = null;
 
-let pendingCommand = null; 
+let pendingCommand = null;
+let incomingCommand = null;
 
 const RECONNECT_DELAY = parseInt(process.env.RECONNECT_DELAY || '3000', 10);
 const TEST_COMMAND = process.env.TEST_COMMAND || ':TEST;';
+const LOOP_DETECTED_COMMAND = process.env.LOOP_DETECTED_COMMAND || ':IN1ON;';
+const LOOP_UNDETECTED_COMMAND = process.env.LOOP_UNDETECTED_COMMAND || ':IN1OFF;';
 
 async function initializeSerialPort() {
     await cleanupSerialPort();
@@ -55,6 +59,7 @@ async function initializeSerialPort() {
         } else {
             // Jika tidak ada command yang menunggu, ini adalah unsolicited data
             writeLog(`Unsolicited data received: ${receivedData}`);
+            processIncomingEvent(receivedData);
         }
     });
 
@@ -98,6 +103,32 @@ async function initializeSerialPort() {
         }
         reconnectSerial();
     });
+}
+
+function processIncomingEvent(data) {
+    // Hilangkan ":" di awal dan ";" di akhir
+    const cleanedData = data.replace(/^:/, "").replace(/;$/, "");
+    const loopConnecteCommand = LOOP_DETECTED_COMMAND.replace(/^:/, "").replace(/;$/, "");
+    const loopDisconnectCommand = LOOP_UNDETECTED_COMMAND.replace(/^:/, "").replace(/;$/, "");
+
+    if (cleanedData !== loopConnecteCommand || cleanedData !== loopDisconnectCommand) {
+        return;
+    }
+
+    if (incomingCommand !== loopConnecteCommand) {
+        incomingCommand = cleanedData;
+
+        if (cleanedData === loopConnecteCommand) {
+            // Send command to Server API
+            loopEvent("connect")
+            return;
+        }
+
+        // Send command to Server API
+        loopEvent("disconnect");
+        incomingCommand = null;
+        return;
+    }
 }
 
 function cleanupSerialPort() {

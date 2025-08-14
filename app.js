@@ -6,12 +6,13 @@ var logger = require('morgan');
 var cors = require('cors');
 
 var indexRouter = require('./routes/index');
+var apiRouter = require('./routes/api');
 var usersRouter = require('./routes/users');
 var serialPortService = require('./services/serialPortService');
 
 var app = express();
 
-// Initialize serial port
+// Initialize serial port must be activate in pro
 // serialPortService.initializeSerialPort();
 
 // view engine setup
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use('/', indexRouter, cors());
+app.use('/api', apiRouter, cors());
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
